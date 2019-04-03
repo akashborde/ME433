@@ -58,11 +58,31 @@ int main() {
     DDPCONbits.JTAGEN = 0;
 
     // do your TRIS and LAT commands here
-
+    
+    /*
+     * Add initializations in main() to make the pushbutton pin an input pin,
+     * and the LED pin as an output that is initially high. 
+     * Upload the code and verify that the LED turns on. 
+     */
+    
+    // Pushbutton pin: B4
+    TRISBbits.TRISB4 = 1; // Set it as an input
+        
+    // Green LED pin:  A4
+    TRISAbits.TRISA4 = 0; //set as output
+    LATAbits.LATA4 = 1;   //initialized as high
+    
     __builtin_enable_interrupts();
 
-    while(1) {
-	// use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
-	// remember the core timer runs at half the sysclk
+    while(1) 
+    {
+        // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
+        // remember the core timer runs at half the sysclk
+        
+        if (PORTBbits.RB4 == 0) //read this input pin
+        {
+            LATAINV = 0b10000; //invert the 4th register
+        }
+    
     }
 }
