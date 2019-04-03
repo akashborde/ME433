@@ -40,6 +40,11 @@
 #pragma config FUSBIDIO = ON // USB pins controlled by USB module
 #pragma config FVBUSONIO = ON // USB BUSON controlled by USB module
 
+//SYSCLK = 48MHz, Core Timer = 24MHz, so one count every 0.0000416 millisec
+//Desired period = 0.5ms
+//Count to 12019 to get to 0.5ms
+
+#define HALF_MILLISEC_IN_COUNTS 12019
 
 int main() {
 
@@ -73,16 +78,31 @@ int main() {
     LATAbits.LATA4 = 1;   //initialized as high
     
     __builtin_enable_interrupts();
+    
+     _CP0_SET_COUNT(0); //begin timer
 
     while(1) 
     {
         // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
         // remember the core timer runs at half the sysclk
+       
+        //LATAbits.LATA4 = 1;   //turn LED on
         
-        if (PORTBbits.RB4 == 0) //read this input pin
+        if (_CP0_GET_COUNT() == 100000)
         {
-            LATAINV = 0b10000; //invert the 4th register
+            LATAINV = 0b10000;   //invert LED
+            _CP0_SET_COUNT(0); //reset timer
         }
+        
+        
+        
+        
+        
+//        
+//        if (PORTBbits.RB4 == 0) //read this input pin
+//        {
+//            LATAINV = 0b10000; //invert the 4th register
+//        }
     
     }
 }
