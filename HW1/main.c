@@ -83,26 +83,25 @@ int main() {
 
     while(1) 
     {
-        // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
-        // remember the core timer runs at half the sysclk
-       
-        //LATAbits.LATA4 = 1;   //turn LED on
         
-        if (_CP0_GET_COUNT() == 100000)
+        //if button pushed, turn LED off.
+        if (PORTBbits.RB4 == 0) //read this input pin
         {
-            LATAINV = 0b10000;   //invert LED
-            _CP0_SET_COUNT(0); //reset timer
+            LATAbits.LATA4 = 0;  //turn off the LED
         }
-        
-        
-        
-        
-        
-//        
-//        if (PORTBbits.RB4 == 0) //read this input pin
-//        {
-//            LATAINV = 0b10000; //invert the 4th register
-//        }
+        else
+        {        
+            // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
+            // remember the core timer runs at half the sysclk
+
+            //LATAbits.LATA4 = 1;   //turn LED on
+
+            if (_CP0_GET_COUNT() > HALF_MILLISEC_IN_COUNTS)
+            {
+                LATAINV = 0b10000;   //invert LED
+                 _CP0_SET_COUNT(0); //reset timer
+            }
+        }     
     
     }
 }
