@@ -1,6 +1,15 @@
+/* 
+ * File:   main.c
+ * Author: akashborde
+ *
+ * Created on April 16, 2019, 3:16 PM
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
-
 
 //values for #pragma config settings are found in:
 // /opt/microchip/xc32/v2.15/docs/config_docs
