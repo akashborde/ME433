@@ -14,6 +14,8 @@
                    projectFiles="true">
       <itemPath>main.c</itemPath>
       <itemPath>pragmas.h</itemPath>
+      <itemPath>spi.h</itemPath>
+      <itemPath>spi.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
