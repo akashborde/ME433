@@ -42,11 +42,24 @@ int main() {
     
     while(1) 
     {
-        LATBbits.LATB15 = 0;
-        unsigned char discard;
-        discard = SPI1_IO('o');
-        LATBbits.LATB15 = 1;
-        
+//        LATBbits.LATB15 = 0;
+//        unsigned char discard;
+//        //BIT 15: Channel. 0 for A, 1 for B
+//        //bit 14: Input Buffer. 1 for buffered
+//        //bit 13: Gain select. 1 for 1x, 0 for 2x
+//        //bit 12: Shutdown control. 1 for active, 0 for shutdown
+//        //this first time will be 0011 for <15:12>
+//        //then a 1000 0000 0000 for a 2048 value for <11:0>
+//        //this means the two bytes are <15:8>: 0011 1000: 0x38
+//        //                             <7:0>:  0000 0000: 0x00
+//                
+//        discard = SPI1_IO(0b00111000);
+//        discard = SPI1_IO(0b00000000);
+//        
+//        LATBbits.LATB15 = 1;
+
+        setVoltage(1, 2);
+        setVoltage(0,1);
         
         //turning LED on and OFF
         //if button pushed, turn LED off.
