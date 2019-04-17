@@ -19,8 +19,14 @@
 
 void initSPI1()
 {
-    __builtin_disable_interrupts();
-        
+    //__builtin_disable_interrupts(); //maybe don't need this if its in the main method
+    
+    //WHAT ARE THE PERIPHERAL PIN SELECT THINGS
+    //DO I JUST DO TRIS AND SET A RANDOM PIN AS CHIP SELECT WITH LAT
+    //I DONT KNOW WHAT TO DO
+    //PLEASE HELP
+
+    //after that this initialization function is complete
         
     SPI1CON = 0; // turn off SPI module and reset it
     SPI1BUF; //clear the rx buffer by reading from it  
@@ -33,12 +39,19 @@ void initSPI1()
      */
     
     //manual suggested clearing ENHBUF
-    //SPI1CONbits.ENHBUF = 0;
-    
+    SPI1CONbits.ENHBUF = 0;    
     SPI1STATbits.SPIROV = 0; //clear the overflow bit
-    
-    
-     __builtin_enable_interrupts();
+    SPI1CONbits.MSTEN = 1; // enable master mode
+    SPI1CONbits.ON = 1; //turn SPI1 on
+    /*
+     * MCP4922 data comes in on rising edge of clock
+     * Default setup for PIC SPI clock is idle = low. SPI1CONbits.CKP = 0;
+     * Default setup for PIC SPI clock read is low to high edge <- data
+     * :: Don't need to modify this part.
+     *   
+     */
+     //__builtin_enable_interrupts(); //maybe don't need this if its in the main method
+        
 }
 
 char SPI1_IO(char write)
@@ -48,10 +61,33 @@ char SPI1_IO(char write)
     return output;
 }
 
-void setVoltage(char channel, int voltage)
+/*
+unsigned char spi_io(unsigned char o) 
 {
-    
+     SPI1BUF = o;
+     while(!SPI1STATbits.SPIRBF) 
+     { // wait to receive the byte
+       ;
+     }
+     return SPI4BUF;
 }
+*/
+
+
+void setVoltage(char a, int v) 
+{
+    // the actual write is pretty easy
+    // 
+
+    // unsigned short t = 0;
+    // t= a << 15; //a is at the very end of the data transfer
+    // t = t | 0b01110000000000000;
+    // t = t | ((v&0b1111111111) <<2); //rejecting excessive bits (above 10)
+    
+    // CS = 0;
+    // spi_io(t>>8);
+}
+
 //
 //#define CS LATBbits.LATB8       // chip select pin
 //
