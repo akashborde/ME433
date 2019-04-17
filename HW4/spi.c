@@ -1,6 +1,9 @@
 //#include "NU32.h"       // constants, funcs for startup and UART
 #include <math.h> 	//for sine wave plotting
 #include "spi.h"
+#include <stdio.h>
+#include <xc.h>
+#include <sys/attribs.h>
 
 // Demonstrates spi by accessing external ram
 // PIC is the master, ram is the slave
@@ -42,6 +45,12 @@ void initSPI1()
     SPI1CONbits.ENHBUF = 0;    
     SPI1STATbits.SPIROV = 0; //clear the overflow bit
     SPI1CONbits.MSTEN = 1; // enable master mode
+    //Chose RPB13 for SDO1 -> set RPB13R<3:0> = 0011 (pg 133). Pin 24
+    RPB13Rbits.RPB13R = 0b0011;
+    //Chose Pin 26 for nCS
+    TRISBbits.TRISB15 = 0; //set this as an output
+    //LATBbits.LATB15 will be the control for this output
+    
     SPI1CONbits.ON = 1; //turn SPI1 on
     /*
      * MCP4922 data comes in on rising edge of clock
@@ -54,11 +63,13 @@ void initSPI1()
         
 }
 
-char SPI1_IO(char write)
+unsigned char SPI1_IO(unsigned char write)
 {
-    char output = write;
+    SPI1BUF = write;
+    while(!SPI1STATbits.SPIRBF)
+    { ; }
     // make something that writes chars
-    return output;
+    return SPI1BUF;
 }
 
 /*

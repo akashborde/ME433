@@ -33,10 +33,22 @@ int main() {
     TRISAbits.TRISA4 = 0; //set as output
     LATAbits.LATA4 = 1;   //initialized as ON
     
+    //spi chip select
+    LATBbits.LATB15 = 1; //initialize as high (off)
+    
+    initSPI1();
+    
     __builtin_enable_interrupts();
     
     while(1) 
     {
+        LATBbits.LATB15 = 0;
+        unsigned char discard;
+        discard = SPI1_IO('o');
+        LATBbits.LATB15 = 1;
+        
+        
+        //turning LED on and OFF
         //if button pushed, turn LED off.
         if (PORTBbits.RB4 == 0) //read this input pin
         {

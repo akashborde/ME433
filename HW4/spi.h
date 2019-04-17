@@ -14,7 +14,7 @@ extern "C" {
 
     
     void initSPI1(); // initalizes SPI1 channel
-    char SPI1_IO(char write); //generic communication
+    unsigned char SPI1_IO(unsigned char write); //generic communication
     void setVoltage(char channel, int voltage);
 
 
