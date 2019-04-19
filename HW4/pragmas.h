@@ -57,6 +57,11 @@ extern "C" {
     #define FREQ_HZ 10
     #define PI 3.14159
     #define SEC_TO_MSEC 1000
+#define TRIANGLE_PERIOD_COUNTS 200 //in counts
+#define SIN_VERTICAL_TRANSLATION 1
+#define TRIANGLE_HEIGHT 2
+#define CHANNEL_A 0
+#define CHANNEL_B 1
 
 
 #ifdef	__cplusplus

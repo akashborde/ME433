@@ -49,27 +49,26 @@ int main() {
         if (_CP0_GET_COUNT() > CPO_COUNTS_TO_1kHz) //enter loop every 1kHz = 1 ms
         {
             //want 10Hz sine wave, so T = 2pi/f = 2pi/10
-            setVoltage(0, 1 + sin( 2*PI*FREQ_HZ*time_ms/SEC_TO_MSEC ) );
+            setVoltage(CHANNEL_A, SIN_VERTICAL_TRANSLATION + sin( 2*PI*FREQ_HZ*time_ms/SEC_TO_MSEC ) );
             
             //triangle function: y = x for x from 0 to T/2; 1-x from T/2 to T
             //T = 0.2 sec for 5Hz. If each count is 0.001sec,
             //T = 200 counts. So T/2 = 100 counts
             //To normalize the height of triangle to 2, divide by the expected max counts = 100 and multiply by 2
-            //
-            int normal_time = time_ms % 200; //normalized to 1 period of the triangle wave
             
-            if( (normal_time) < 100) // first half
+            //normalized to 1 period of the triangle wave
+            int normal_time_ms = time_ms % TRIANGLE_PERIOD_COUNTS; 
+            
+            if( (normal_time_ms) < TRIANGLE_PERIOD_COUNTS/2) // first half of triangle
             {
-                setVoltage(1, 2 * ((double) normal_time / 100) );
+                //output = 2 * input * 
+                setVoltage(CHANNEL_B, TRIANGLE_HEIGHT * ((double) normal_time_ms * FREQ_HZ / SEC_TO_MSEC ) );
             }
-            else if( normal_time >= 100)
+            else if( normal_time_ms >= TRIANGLE_PERIOD_COUNTS/2)
             {
-                setVoltage(1, 2 * ( (double) (-normal_time + 200) / 100) ) ;
+                setVoltage(CHANNEL_B, TRIANGLE_HEIGHT * ( (double) (-normal_time_ms + TRIANGLE_PERIOD_COUNTS) * FREQ_HZ / SEC_TO_MSEC) ) ;
             }
-            else
-            {
-                setVoltage(1, 3);//should never reach this
-            }
+           
             
             
             //setVoltage(0,time_ms);
