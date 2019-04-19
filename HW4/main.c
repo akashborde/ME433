@@ -13,7 +13,7 @@
 #include<sys/attribs.h>  // __ISR macro
 #include "pragmas.h"
 #include "spi.h"
-
+#include <math.h>
 
 int main() {
 
@@ -39,37 +39,59 @@ int main() {
     initSPI1();
     
     __builtin_enable_interrupts();
+
+    _CP0_SET_COUNT(0);//begin timer
+    int time_ms = 0;
     
     while(1) 
     {
-//        LATBbits.LATB15 = 0;
-//        unsigned char discard;
-//        //BIT 15: Channel. 0 for A, 1 for B
-//        //bit 14: Input Buffer. 1 for buffered
-//        //bit 13: Gain select. 1 for 1x, 0 for 2x
-//        //bit 12: Shutdown control. 1 for active, 0 for shutdown
-//        //this first time will be 0011 for <15:12>
-//        //then a 1000 0000 0000 for a 2048 value for <11:0>
-//        //this means the two bytes are <15:8>: 0011 1000: 0x38
-//        //                             <7:0>:  0000 0000: 0x00
-//                
-//        discard = SPI1_IO(0b00111000);
-//        discard = SPI1_IO(0b00000000);
-//        
-//        LATBbits.LATB15 = 1;
-
-        setVoltage(1, 2);
-        setVoltage(0,1);
         
-        //turning LED on and OFF
-        //if button pushed, turn LED off.
-        if (PORTBbits.RB4 == 0) //read this input pin
+        if (_CP0_GET_COUNT() > CPO_COUNTS_TO_1kHz) //enter loop every 1kHz = 1 ms
         {
-            LATAbits.LATA4 = 0;  //turn OFF the LED
+            //want 10Hz sine wave, so T = 2pi/f = 2pi/10
+            setVoltage(0, 1 + sin( 2*PI*FREQ_HZ*time_ms/SEC_TO_MSEC ) );
+            
+            //triangle function: y = x for x from 0 to T/2; 1-x from T/2 to T
+            //T = 0.2 sec for 5Hz. If each count is 0.001sec,
+            //T = 200 counts. So T/2 = 100 counts
+            //To normalize the height of triangle to 2, divide by the expected max counts = 100 and multiply by 2
+            //
+            int normal_time = time_ms % 200; //normalized to 1 period of the triangle wave
+            
+            if( (normal_time) < 100) // first half
+            {
+                setVoltage(1, 2 * ((double) normal_time / 100) );
+            }
+            else if( normal_time >= 100)
+            {
+                setVoltage(1, 2 * ( (double) (-normal_time + 200) / 100) ) ;
+            }
+            else
+            {
+                setVoltage(1, 3);//should never reach this
+            }
+            
+            
+            //setVoltage(0,time_ms);
+            
+            //reset the counter every 1000 counts
+            
+            if (time_ms < FREQ_HZ*SEC_TO_MSEC ) 
+            {
+                time_ms++; //increment   
+            }
+            else {time_ms = 0;} //reset every 1kHz
+            
+            _CP0_SET_COUNT(0);//reset timer
         }
-        else
-        {        
-            LATAbits.LATA4 = 1; // turn it on
-        }     
+//       
+        
+        //add a sine function here
+
+
+        //setVoltage(1,2);
+        //setVoltage(0,1);
+//        
+//      
     }
 }

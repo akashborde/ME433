@@ -14,10 +14,9 @@ extern "C" {
 
     //#define MAX_VOLTAGE 3.3
     //#define MAX_RESOLUTION 4095
-
     void initSPI1(); // initalizes SPI1 channel
     unsigned char SPI1_IO(unsigned char write); //generic communication
-    void setVoltage(char channel, int voltage);
+    void setVoltage(char channel, double voltage);
 
 
 
