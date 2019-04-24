@@ -69,9 +69,7 @@ int main() {
                 setVoltage(CHANNEL_B, TRIANGLE_HEIGHT * ( (double) (-normal_time_ms + TRIANGLE_PERIOD_COUNTS) * FREQ_HZ / SEC_TO_MSEC) ) ;
             }
            
-            
-            
-            //setVoltage(0,time_ms);
+         
             
             //reset the counter every 1000 counts
             
