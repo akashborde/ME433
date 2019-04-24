@@ -23,7 +23,7 @@ void i2c_master_ack(int val);             // send an ACK (0) or NACK (1)
 void i2c_master_stop(void);               // send a stop
 
 void initExpander(void);				  //initialize the MCP23008
-//void setExpander(char pin, char level);	  //write using i2c
-//char getExpander(void);						  //read using i2c	
+void setExpander(char pin, char level);	  //write using i2c
+char getExpander(void);						  //read using i2c	
 
 #endif

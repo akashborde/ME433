@@ -59,16 +59,51 @@ void i2c_master_stop(void) {          // send a STOP:
 
 void initExpander(void)
 {
-	 i2c_master_setup();
+	i2c_master_setup();
+     
+    i2c_master_start(); // Begin the start sequence
+    //define where to send the i2c message
+    i2c_master_send(i2c_WRITE_ADDR); //send addr with a 0 for write
+    //define what SFR on the i2c chip to write to
+    i2c_master_send(i2c_IODIR_SFR);
+    //send the value to go to the SFR
+    //set 0-3 output and 4-7 input
+    i2c_master_send( GPIO_0to3_OUTPUT | GPIO_4to7_INPUT);
+    //end this thread real quick
+    i2c_master_stop();
+    
     
 }
 
-//void setExpander(char pin, char level)
-//{
-//	i2c_master_start(); // Begin the start sequence
-//	//define where to send the i2c message
-//    i2c_master_send(i2c_WRITE_ADDR); //send addr with a 0 for write
+void setExpander(char pin, char level)
+{
+    i2c_master_start(); // Begin the start sequence
+	//define where to send the i2c message
+    i2c_master_send(i2c_WRITE_ADDR); //send addr with a 0 for write
 //    //define what SFR on the i2c chip to write to
-//    i2c_master_send();
-////need to generalize this
-//}
+    i2c_master_send(i2c_GPIO_SFR);
+    // send the actual data
+    i2c_master_send(level << pin);
+    //stop
+    i2c_master_stop();
+}
+
+char getExpander()
+{
+    char read;
+    //begin start sequence of a write
+    i2c_master_start();
+    //defining the MCP expander chip as the target of this read
+    i2c_master_send(i2c_WRITE_ADDR);       // pic address and read byte
+    //define which SFR you're gonna write to        
+    i2c_master_send(i2c_GPIO_SFR);         // 
+     i2c_master_restart();                   // send a RESTART so we can begin reading 
+    i2c_master_send(i2c_READ_ADDR); // send slave address, left shifted by 1,
+                                            // and then a 1 in lsb, indicating read
+    read = i2c_master_recv();       // receive a byte from the bus
+//        i2c_master_ack(0);                      // send ACK (0): master wants another byte!
+//        master_read1 = i2c_master_recv();       // receive another byte from the bus
+    i2c_master_ack(1);                      // send NACK (1):  master needs no more bytes
+    i2c_master_stop();                      // send STOP:  end transmission, give
+    return read;
+}
