@@ -14,7 +14,7 @@
 #include "i2c_master_noint.h"
 //#include "i2c_master_noint.h" //i2c initialization File
 
-
+#define FIVE_HZ_PERIOD 4807692
 //values for #pragma config settings are found in:
 // /opt/microchip/xc32/v2.15/docs/config_docs
 
@@ -54,8 +54,12 @@
 #pragma config FVBUSONIO = ON // USB BUSON controlled by USB module
 
 //SYSCLK = 48MHz, Core Timer = 24MHz, so one count every 0.0000416 millisec
-//Desired period = 0.5ms
-//Count to 12019 to get to 0.5ms
+// = a count every 0.0000000416 sec
+//Desired period = 0.2s
+//Count to 4807692
+
+
+
 
 int main() {
 
@@ -72,10 +76,23 @@ int main() {
       //i2c_master_setup(); //initialize i2c2 register
     initExpander(); // initialize the i2c
     
+    //5Hz LED initialize
+    // Green LED pin:  A4
+    TRISAbits.TRISA4 = 0; //set as output
+    LATAbits.LATA4 = 1;   //initialized as high
+    _CP0_SET_COUNT(0); //begin timer
+    
     __builtin_enable_interrupts();
     
     while(1) 
     {
+        
+        if(_CP0_GET_COUNT() > FIVE_HZ_PERIOD)
+        {
+            LATAINV = 0b10000; //INVERT THE LED
+            _CP0_SET_COUNT(0);
+        }
+        
         char read = getExpander();
        
         char GP6_status = (read >> 6); //extract the first bit (GP7 info)
@@ -89,6 +106,8 @@ int main() {
         {        
             setExpander(0,0);
         }     
+        
+        
     
     }
 }
