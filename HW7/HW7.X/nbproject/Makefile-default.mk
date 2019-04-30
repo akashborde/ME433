@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=i2c_master_noint.c main.c
+SOURCEFILES_QUOTED_IF_SPACED=i2c_master_noint.c main.c peripheral.c ili9341.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/i2c_master_noint.o ${OBJECTDIR}/main.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/i2c_master_noint.o.d ${OBJECTDIR}/main.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/i2c_master_noint.o ${OBJECTDIR}/main.o ${OBJECTDIR}/peripheral.o ${OBJECTDIR}/ili9341.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/i2c_master_noint.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/peripheral.o.d ${OBJECTDIR}/ili9341.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/i2c_master_noint.o ${OBJECTDIR}/main.o
+OBJECTFILES=${OBJECTDIR}/i2c_master_noint.o ${OBJECTDIR}/main.o ${OBJECTDIR}/peripheral.o ${OBJECTDIR}/ili9341.o
 
 # Source Files
-SOURCEFILES=i2c_master_noint.c main.c
+SOURCEFILES=i2c_master_noint.c main.c peripheral.c ili9341.c
 
 
 CFLAGS=
@@ -118,6 +118,18 @@ ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/main.o 
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d" -o ${OBJECTDIR}/main.o main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/peripheral.o: peripheral.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/peripheral.o.d 
+	@${RM} ${OBJECTDIR}/peripheral.o 
+	@${FIXDEPS} "${OBJECTDIR}/peripheral.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/peripheral.o.d" -o ${OBJECTDIR}/peripheral.o peripheral.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/ili9341.o: ili9341.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ili9341.o.d 
+	@${RM} ${OBJECTDIR}/ili9341.o 
+	@${FIXDEPS} "${OBJECTDIR}/ili9341.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/ili9341.o.d" -o ${OBJECTDIR}/ili9341.o ili9341.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/i2c_master_noint.o: i2c_master_noint.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -130,6 +142,18 @@ ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d" -o ${OBJECTDIR}/main.o main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/peripheral.o: peripheral.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/peripheral.o.d 
+	@${RM} ${OBJECTDIR}/peripheral.o 
+	@${FIXDEPS} "${OBJECTDIR}/peripheral.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/peripheral.o.d" -o ${OBJECTDIR}/peripheral.o peripheral.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/ili9341.o: ili9341.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ili9341.o.d 
+	@${RM} ${OBJECTDIR}/ili9341.o 
+	@${FIXDEPS} "${OBJECTDIR}/ili9341.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/ili9341.o.d" -o ${OBJECTDIR}/ili9341.o ili9341.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

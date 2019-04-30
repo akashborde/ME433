@@ -5,6 +5,7 @@
  * Created on April 16, 2019, 3:16 PM
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -12,109 +13,113 @@
 #include<sys/attribs.h>  // __ISR macro
 
 #include "i2c_master_noint.h"
+#include "pragmas.h"
+#include "peripheral.h"
+#include "ili9341.h"
+
 //#include "i2c_master_noint.h" //i2c initialization File
 
-#define FIVE_HZ_PERIOD 4807692
 //values for #pragma config settings are found in:
 // /opt/microchip/xc32/v2.15/docs/config_docs
-
-// DEVCFG0
-#pragma config DEBUG = OFF // no debugging
-#pragma config JTAGEN = OFF // no jtag
-#pragma config ICESEL = ICS_PGx1 // use PGED1 and PGEC1
-#pragma config PWP = OFF // no write protect
-#pragma config BWP = OFF // no boot write protect
-#pragma config CP = OFF // no code protect
-
-// DEVCFG1
-#pragma config FNOSC = PRIPLL // use primary oscillator with pll
-#pragma config FSOSCEN = OFF // turn off secondary oscillator
-#pragma config IESO = OFF // no switching clocks
-#pragma config POSCMOD = HS // high speed crystal mode
-#pragma config OSCIOFNC = OFF // disable secondary osc
-#pragma config FPBDIV = DIV_1 // divide sysclk freq by 1 for peripheral bus clock
-#pragma config FCKSM = CSDCMD // do not enable clock switch
-#pragma config WDTPS = PS1 // use slowest wdt
-#pragma config WINDIS = OFF // wdt no window mode
-#pragma config FWDTEN = OFF // wdt disabled
-#pragma config FWDTWINSZ = WINSZ_25  // wdt window at 25%
-
-// DEVCFG2 - get the sysclk clock to 48MHz from the 8MHz crystal
-#pragma config FPLLIDIV = DIV_2 // divide input clock to be in range 4-5MHz
-#pragma config FPLLMUL = MUL_24 // multiply clock after FPLLIDIV, 4*24 = 96MHz
-#pragma config FPLLODIV = DIV_2 // divide clock after FPLLMUL, 96/2 = 48MHz
-#pragma config UPLLIDIV = DIV_2 // divider for the 8MHz input clock, then multiplied by 12 to get 48MHz for USB
-#pragma config UPLLEN = ON // USB clock on
-
-// DEVCFG3
-#pragma config USERID = 00000000 // some 16bit userid, doesn't matter what
-#pragma config PMDL1WAY = OFF // allow multiple reconfigurations
-#pragma config IOL1WAY = OFF // allow multiple reconfigurations
-#pragma config FUSBIDIO = ON // USB pins controlled by USB module
-#pragma config FVBUSONIO = ON // USB BUSON controlled by USB module
-
-//SYSCLK = 48MHz, Core Timer = 24MHz, so one count every 0.0000416 millisec
-// = a count every 0.0000000416 sec
-//Desired period = 0.2s
-//Count to 4807692
-
-
 
 
 int main() {
 
     __builtin_disable_interrupts();
-
-    // set the CP0 CONFIG register to indicate that kseg0 is cacheable (0x3)
-    __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583);
-    // 0 data RAM access wait states
-    BMXCONbits.BMXWSDRM = 0x0;
-    // enable multi vector interrupts
-    INTCONbits.MVEC = 0x1;
-    // disable JTAG to get pins back
-    DDPCONbits.JTAGEN = 0;
-      //i2c_master_setup(); //initialize i2c2 register
-    initExpander(); // initialize the i2c
-    
-    //5Hz LED initialize
-    // Green LED pin:  A4
-    TRISAbits.TRISA4 = 0; //set as output
-    LATAbits.LATA4 = 0;   //initialized as low
+    initializePIC32(); //set up RAM, vector, JTAG stuff
+    LED_Setup_A4();
+    IMU_Setup(); // initialize the i2c
+    SPI1_init();
+    LCD_init();
     _CP0_SET_COUNT(0); //begin timer
     
-    __builtin_enable_interrupts();
+    __builtin_enable_interrupts();    
+    LCD_clearScreen(ILI9341_PINK); 
     
-    char read = getExpander();
+    //make sure the IMU is communicating
+    char read = IMU_read();
+    
+    //for printing to the screen later:
+    char m[100];
+    int b;   
+    unsigned char dat[NUM_READS]; //worked fine if unsigned
+    short temp,
+            x_angle, y_angle, z_angle,
+            x_accel, y_accel, z_accel;
     
     while(1) 
     {
-        
         if(read == WHOAMI_ID)
         {
-            if (_CP0_GET_COUNT() > 4000000)
+            //blink LED to verify the program hasn't crashed
+            if (_CP0_GET_COUNT() > 40000)
             {
-                LATAINV = 0b10000; //INVERT LED
+                LED_Invert_A4(); //INVERT LED
                _CP0_SET_COUNT(0);
-            }
-            //LATAbits.LATA4 = 1; //turn on LED
             
+                                 
+            IMU_read_multiple(OUT_TEMP_L, dat, NUM_READS);
+            
+//            temp =      (dat[1] << 8) | dat[0];
+//            x_angle =   (dat[3] << 8) | dat[2];
+//            y_angle =   (dat[5] << 8) | dat[4];
+//            z_angle =   (dat[7] << 8) | dat[6];
+            x_accel =   (dat[9] << 8) | dat[8];
+            y_accel =   (dat[11] << 8) | dat[10];
+            z_accel =   (dat[13] << 8) | dat[12];
+            
+//            sprintf(m, "temp = %d  ", temp);
+//            LCD_print(m, START_X, START_Y, ILI9341_BLUE, ILI9341_PINK);
+            sprintf(m, "x_accel = %d  ", x_accel);
+            LCD_print(m, START_X, START_Y + 10, ILI9341_BLUE, ILI9341_PINK);
+            sprintf(m, "y_accel = %d  ", y_accel);
+            LCD_print(m, START_X, START_Y + 20, ILI9341_BLUE, ILI9341_PINK);
+            sprintf(m, "z_accel = %d  ", z_accel);
+            LCD_print(m, START_X, START_Y + 30, ILI9341_BLUE, ILI9341_PINK);
+            sprintf(m, "x_accel_to_p = %d ", accel_to_percent(x_accel));
+            LCD_print(m, START_X, START_Y - 10, ILI9341_BLUE, ILI9341_PINK);
+            
+            LCD_horizProgBar(CENTER_X, CENTER_Y + 50, 50, 5, x_accel,
+                    ILI9341_ORANGE, ILI9341_BLACK);
+        LCD_vertProgBar(CENTER_X - 50, CENTER_Y, 5, 50, y_accel,
+                    ILI9341_ORANGE, ILI9341_BLACK);
+            }
+            
+//            for (b = 0; b<(NUM_READS/2); b++)
+//            {
+//                val[b] = (dat[1+b*2] << 8 ) | dat[b*2];  
+//            }
+            /*
+                * 0 = 1 + 0
+                * 1 = 3 + 2
+                * 2 = 5 + 4
+             */
+            
+            
+//            sprintf(m, "Temp = %d", val[0]); //put the string i = (number)in a char array
+//            LCD_print(m, START_X, START_Y, ILI9341_BLUE, ILI9341_PINK);
+//            sprintf(m, "Xaccel = %d", val[4]);
+//            LCD_print(m, START_X, START_Y + 10, ILI9341_BLUE, ILI9341_PINK);
+//            sprintf(m, "Yaccel = %d", val[5]);
+//            LCD_print(m, START_X, START_Y + 20, ILI9341_BLUE, ILI9341_PINK);
+//            sprintf(m, "Zaccel = %d", val[6]);
+//            LCD_print(m, START_X, START_Y + 30, ILI9341_BLUE, ILI9341_PINK);
+//            
+
+            
+//            sprintf(m, "1 = %d", 1);
+//            LCD_print(m, START_X, START_Y + 10, ILI9341_BLUE, ILI9341_PINK);
+//            sprintf(m, "0b011 + 1 = %d", b+1);
+//            LCD_print(m, START_X, START_Y + 20, ILI9341_BLUE, ILI9341_PINK);
+            
+            
+            
+            //LCD_progBar(START_X, START_Y + 10, PROG_BAR_LEN, PROG_BAR_HEIGHT, 20, ILI9341_CYAN,ILI9341_BLACK); // draw a 30% full bar
         }
-        
-        
-       
-//        char GP6_status = (read >> 6); //extract the first bit (GP7 info)
-//        GP6_status &= 0b01; // clear first bit just incase there was info from bit 7        
-//        
-//        if (GP6_status)//read this input pin, which reflects the GP7 state
-//        {
-//            setExpander(0,1);
-//        }
-//        else
-//        {        
-//            setExpander(0,0);
-//        }     
-        
-        
-    
+        else
+        {
+            sprintf(m, "Can't read from IMU");
+            LCD_print(m, START_X, START_Y, ILI9341_BLUE, ILI9341_PINK);
+        }  
     }
 }

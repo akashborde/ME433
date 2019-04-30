@@ -14,8 +14,6 @@ void i2c_master_setup(void) {
   ANSELBbits.ANSB3 = 0; 	//turn off analog input for Pin B3 aka SCL2
   I2C2CONbits.ON = 1;               // turn on the I2C2 module
   I2C2BRG = 90;            //400kHz means 90, according to pg 192 of ME333 text
-  
- 
 }
 
 // Start a transmission on the I2C bus
@@ -57,38 +55,54 @@ void i2c_master_stop(void) {          // send a STOP:
   while(I2C2CONbits.PEN) { ; }        // wait for STOP to complete
 }
 
-void initExpander(void)
+void IMU_Setup(void)
 {
-	i2c_master_setup();
-     
-//    i2c_master_start(); // Begin the start sequence
-//    //define where to send the i2c message
-//    i2c_master_send(i2c_WRITE_ADDR); //send addr with a 0 for write
-//    //define what SFR on the i2c chip to write to
-//    i2c_master_send(i2c_WHOAMI_SFR);
-//    //send the value to go to the SFR
-//    //set 0-3 output and 4-7 input
-//    i2c_master_send( GPIO_0to3_OUTPUT | GPIO_4to7_INPUT);
-//    //end this thread real quick
-//    i2c_master_stop();
+	i2c_master_setup(); //setup SPI
     
-    
-}
-
-void setExpander(char pin, char level)
-{
-    i2c_master_start(); // Begin the start sequence
-	//define where to send the i2c message
-    i2c_master_send(i2c_WRITE_ADDR); //send addr with a 0 for write
-//    //define what SFR on the i2c chip to write to
-    i2c_master_send(i2c_WHOAMI_SFR);
-    // send the actual data
-    //i2c_master_send(level << pin);
+    //send message to IMU about accelerometer
+    i2c_master_start(); //start signal for writing
+    i2c_master_send(i2c_WRITE_ADDR);
+    //write to the CTRL1_XL register
+    i2c_master_send(IMU_CTRL1_XL);
+    //set the frequency, sensitivity (g) and filter
+    i2c_master_send(FREQ_1_66_KHZ | SENS_2G | FILT_100HZ);    
     //stop
+    i2c_master_stop(); //stop signal
+    
+    i2c_master_start(); //start signal for writing
+    i2c_master_send(i2c_WRITE_ADDR);
+    //write to gyroscope register
+    i2c_master_send(IMU_CTRL2_G);
+    //set frequency and sensitivity
+    i2c_master_send(FREQ_1_66_KHZ | SENS_1000DPS);
+    //STOP
     i2c_master_stop();
+    
+    i2c_master_start(); //start signal for writing
+    i2c_master_send(i2c_WRITE_ADDR);
+    //write to cntl register
+    i2c_master_send(IMU_CTRL3_C);
+    //set multiple byte access command
+    i2c_master_send(MULT_BYTE_ACCESS);
+    //STOP
+    i2c_master_stop();
+    
 }
 
-char getExpander()
+//void setExpander(char pin, char level)
+//{
+//    i2c_master_start(); // Begin the start sequence
+//	//define where to send the i2c message
+//    i2c_master_send(i2c_WRITE_ADDR); //send addr with a 0 for write
+////    //define what SFR on the i2c chip to write to
+//    i2c_master_send(i2c_WHOAMI_SFR);
+//    // send the actual data
+//    //i2c_master_send(level << pin);
+//    //stop
+//    i2c_master_stop();
+//}
+
+char IMU_read()
 {
     char read;
     //begin start sequence of a write
@@ -107,3 +121,40 @@ char getExpander()
     i2c_master_stop();                      // send STOP:  end transmission, give
     return read;
 }
+
+void IMU_read_multiple(unsigned char r, unsigned char * data, int length)
+{
+    /*
+     * Reads sequentially from the IMU
+     * @param:  r    first register to read
+     * @param   *data       pointer to array to store data
+     * @param:  length      length of array     * 
+     */
+    
+        
+    i2c_master_start(); //start the read
+    // pic address and read byte
+    i2c_master_send(i2c_WRITE_ADDR);       
+    //send the first register to read from (should be OUT_TEMP_L)
+    i2c_master_send(r); 
+    i2c_master_restart();  // send a RESTART so we can begin reading
+    i2c_master_send(i2c_READ_ADDR); // send slave address, with a 1 indicating read
+    
+    int i; //for loop index
+    for (i = 0; i < length; i++)
+    {
+       data[i] = i2c_master_recv(); //read a byte, put it in the array
+
+       if (i < (length - 1)) //for every time except the last
+       {
+           i2c_master_ack(0); //keep reading
+       }
+       else //for the last time 
+       {
+           i2c_master_ack(1); //stop reading
+       }                                     
+    }    
+}
+
+
+
