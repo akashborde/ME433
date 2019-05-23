@@ -5,8 +5,8 @@
         <group>
             <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/peripheral.c</file>
             <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/main.c</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/ili9341.c</file>
             <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/i2c_master_noint.c</file>
+            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/ili9341.h</file>
         </group>
     </open-files>
 </project-private>

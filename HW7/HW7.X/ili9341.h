@@ -199,6 +199,15 @@ static const char ASCII[96][ASCII_TBL_LENGTH] = {
 #define CS LATBbits.LATB7
 #define DC LATBbits.LATB15
 
+//touchscreen
+#define CS_touch LATBbits.LATB9
+#define CMD_START 0b10000000 //<7> is start, always high for command
+#define CMD_END   0b00000001 //<3:0> should be 0001
+#define Y_RQST    0b00010000 //<6:4> as 001 is Y-posn
+#define Z1_RQST   0b00110000 //<6:4> as 011 is Z1
+#define Z2_RQST   0b01000000 //<6:4> as 100 is Z2
+#define X_RQST    0b01010000 //<6:4> as 101 is X-posn
+
 //HW6 start position
 #define START_X 28
 #define START_Y 32
@@ -232,8 +241,15 @@ void LCD_print(char* m, unsigned short x, unsigned short y, unsigned short fc, u
 void LCD_horizProgBar(unsigned short x, unsigned short y, 
         unsigned short w, unsigned short h, short a, unsigned short c, unsigned short bkc); 
 void LCD_vertProgBar(unsigned short x, unsigned short y, 
-        unsigned short w, unsigned short h, short a, unsigned short c, unsigned short bkc); 
-
+        unsigned short w, unsigned short h, short a, unsigned short c, unsigned short bkc);
+//convert acceleration to a percent (assuming 2g setting, where 1g = 16000)
 int accel_to_percent(short a);
+//reads X,Y,Z values of the touchscreen and returns them in pointers
+void XPT2046_read(unsigned short *x, unsigned short *y, unsigned int *z);
+//converts x and y values from the LCD to pixel locations
+void LCD_posn_to_pixel(unsigned short *x, unsigned short *y, int *xp, int *yp);
+//draw buttons
+void LCD_draw_button(char*m,unsigned short x, unsigned short y, unsigned short w, 
+        unsigned short h, unsigned short fc, unsigned short bkc);
 
 #endif

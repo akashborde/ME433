@@ -154,6 +154,14 @@ typedef struct
 
     /* Application CDC read buffer */
     uint8_t * readBuffer;
+    
+    //moving average buffer
+    short maf[NUM_AVG];// = {0, 0, 0, 0, 0};
+    short fir[NUM_AVG];
+    double fir_wt[NUM_AVG];
+    
+    //infinite impulse response
+    double old_wt, new_wt, iir;
 
 } APP_DATA;
 

@@ -52,7 +52,7 @@ extern "C" {
     #pragma config IOL1WAY = OFF // allow multiple reconfigurations
     #pragma config FUSBIDIO = ON // USB pins controlled by USB module
     #pragma config FVBUSONIO = ON // USB BUSON controlled by USB module
-
+					//this one should be off if you're using USB	
     #define CPO_COUNTS_TO_1kHz 24000
     #define FREQ_HZ 10
     #define PI 3.14159

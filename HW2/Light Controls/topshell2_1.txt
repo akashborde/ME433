@@ -1,0 +1,45 @@
+Partlist exported from /home/akashborde/Projects/ME433/HW2/Light Controls/topshell2.1.sch at 5/13/19 7:31 PM
+
+Part           Value         Device        Package    Description                                       MF MPN           OC_FARNELL OC_NEWARK SPICEMODEL SPICEPREFIX
+12V_IN         39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+BRK_CONN       39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+BRK_LED        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+C1             10nF          C             C0805      CAPACITOR, European symbol                                                              NONE       C          
+C2             2.2uF         C             C0805      CAPACITOR, European symbol                                                              NONE       C          
+DASH_IN        39-30-06?     39-30-06?     39-30-?06? HEADER                                                                                                        
+HD_LED         39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+HD_LED1        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+HRN_LED        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+IC2            74AHC1G08DBV  74AHC1G08DBV  SOT23-5    2-input AND gate                                                                                              
+IC3            74AHC1G08DBV  74AHC1G08DBV  SOT23-5    2-input AND gate                                                                                              
+IC4            74AHC1G32DBV  74AHC1G32DBV  SOT23-5    2-input OR gate                                                                                               
+IC5            74AHC1G32DBV  74AHC1G32DBV  SOT23-5    2-input OR gate                                                                                               
+IC6            REG1117       REG1117       SOT223     800mA and 1A Low Dropout (LDO) Positive Regulator    REG1117       1097566    14P6981                         
+LT_LED         39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+LT_LED1        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+LT_LED2        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+Q1             PSMN013-30MLC PSMN013-30MLC LFPAK33    N-channel 30 V 13.6 mΩ logic level MOSFET            PSMN013-30MLC 2115260    05W5709                         
+Q2             PSMN013-30MLC PSMN013-30MLC LFPAK33    N-channel 30 V 13.6 mΩ logic level MOSFET            PSMN013-30MLC 2115260    05W5709                         
+Q3             PSMN013-30MLC PSMN013-30MLC LFPAK33    N-channel 30 V 13.6 mΩ logic level MOSFET            PSMN013-30MLC 2115260    05W5709                         
+Q4             PSMN013-30MLC PSMN013-30MLC LFPAK33    N-channel 30 V 13.6 mΩ logic level MOSFET            PSMN013-30MLC 2115260    05W5709                         
+Q5             PSMN013-30MLC PSMN013-30MLC LFPAK33    N-channel 30 V 13.6 mΩ logic level MOSFET            PSMN013-30MLC 2115260    05W5709                         
+Q6             PSMN013-30MLC PSMN013-30MLC LFPAK33    N-channel 30 V 13.6 mΩ logic level MOSFET            PSMN013-30MLC 2115260    05W5709                         
+R1             100K          R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R2             220K          R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R3             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R4             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R5             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R6             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R7             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R8             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R9             1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R10            1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R11            1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+R13            1K            R-US_R0805    R0805      RESISTOR, American symbol                                                                                     
+RT_LED         39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+RT_LED1        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+RT_LED2        39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+STATE_OUT_CONN 39-30-08?     39-30-08?     39-30-?08? HEADER                                                                                                        
+STRB_CONN      39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+STRB_LED       39-30-02?     39-30-02?     39-30-?02? HEADER                                                                                                        
+TS3V555        LM555D        LM555D        SO08       TIMER                                                                                                         

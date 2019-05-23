@@ -68,6 +68,7 @@ extern "C" {
 */
 #define SYS_VERSION_STR           "1.10"
 #define SYS_VERSION               11000
+#define NUM_AVG                     5
 
 // *****************************************************************************
 /* Clock System Service Configuration Options

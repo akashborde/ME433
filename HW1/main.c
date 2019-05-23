@@ -14,6 +14,8 @@
 //values for #pragma config settings are found in:
 // /opt/microchip/xc32/v2.15/docs/config_docs
 
+#define FIVE_HZ_PERIOD 4807692
+
 // DEVCFG0
 #pragma config DEBUG = OFF // no debugging
 #pragma config JTAGEN = OFF // no jtag
@@ -93,24 +95,11 @@ int main() {
     while(1) 
     {
         
-        //if button pushed, turn LED off.
-        if (PORTBbits.RB4 == 0) //read this input pin
+           if(_CP0_GET_COUNT() > FIVE_HZ_PERIOD)
         {
-            LATAbits.LATA4 = 0;  //turn off the LED
+            LATAINV = 0b10000; //INVERT THE LED
+            _CP0_SET_COUNT(0);
         }
-        else
-        {        
-            // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
-            // remember the core timer runs at half the sysclk
-
-            //LATAbits.LATA4 = 1;   //turn LED on
-
-            if (_CP0_GET_COUNT() > HALF_MILLISEC_IN_COUNTS)
-            {
-                LATAINV = 0b10000;   //invert LED
-                 _CP0_SET_COUNT(0); //reset timer
-            }
-        }     
     
     }
 }

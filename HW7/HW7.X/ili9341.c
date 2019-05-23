@@ -190,6 +190,9 @@ void SPI1_init() {
   SDI1Rbits.SDI1R = 0b0100; // B8 is SDI1
   RPA1Rbits.RPA1R = 0b0011; // A1 is SDO1
   TRISBbits.TRISB7 = 0; // CS is B7
+  TRISBbits.TRISB9 = 0; //CS_touch B9
+  
+  CS_touch = 1; //start this high
   CS = 1; // CS starts high
 
   // DC pin
@@ -198,7 +201,7 @@ void SPI1_init() {
   
   SPI1CON = 0; // turn off the spi module and reset it
   SPI1BUF; // clear the rx buffer by reading from it
-  SPI1BRG = 0; // baud rate to 12 MHz [SPI1BRG = (48000000/(2*desired))-1]
+  SPI1BRG = 3; // this baud worked for nick, bring it down later
   SPI1STATbits.SPIROV = 0; // clear the overflow bit
   SPI1CONbits.CKE = 1; // data changes when clock goes from hi to lo (since CKP is 0)
   SPI1CONbits.MSTEN = 1; // master operation
@@ -404,4 +407,84 @@ int accel_to_percent(short accel)
 {
     int p = abs(100* ((double) accel/ACCEL_1G)); //normalize gravity as 100% acceleration
     return p;
+}
+
+void XPT2046_read(unsigned short *x, unsigned short *y, unsigned int *z)
+{
+    
+    
+    unsigned short data;
+    char read;
+    
+    unsigned char b1;
+    unsigned char b2;
+    unsigned int Z1;
+    unsigned int Z2;
+    
+    //for the first time, we'll get an xposn
+    CS_touch = 0; //select touch screen
+    //first spi send is command which should return garbage
+    spi_io(CMD_START | X_RQST | CMD_END);
+    //second and third commands are zeroes, but they return real info
+    b1 = spi_io(0x00);
+    b2 = spi_io(0x00);
+    CS_touch = 1; //select touch screen
+    *x = (b1 << 5) | (b2 >> 3);
+    
+    CS_touch = 0; //select touch screen
+    //first spi send is command which should return garbage
+    spi_io(CMD_START | Y_RQST | CMD_END);
+    //second and third commands are zeroes, but they return real info
+    b1 = spi_io(0x00);
+    b2 = spi_io(0x00);
+    CS_touch = 1; //select touch screen
+    *y = (b1 << 5) | (b2 >> 3);
+    
+    CS_touch = 0; //select touch screen
+     //first spi send is command which should return garbage
+    spi_io(CMD_START | Z1_RQST | CMD_END);
+    //second and third commands are zeroes, but they return real info
+    b1 = spi_io(0x00);
+    b2 = spi_io(0x00);    
+    CS_touch = 1; //select touch screen
+    Z1 = (b1 << 5) | (b2 >> 3);
+   
+    
+    CS_touch = 0; //select touch screen
+     //first spi send is command which should return garbage
+    spi_io(CMD_START | Z2_RQST | CMD_END);
+    //second and third commands are zeroes, but they return real info
+    b1 = spi_io(0x00);
+    b2 = spi_io(0x00);    
+    CS_touch = 1; //select touch screen
+    Z2 = (b1 << 5) | (b2 >> 3);
+    
+    *z = Z1-Z2 + 4095;
+    
+    CS_touch = 1; //deselect the touchscreen
+}
+
+void LCD_posn_to_pixel(unsigned short *x, unsigned short *y, int *xp, int *yp)
+{
+    *xp = (718*(*x) - 367200)/10000;
+    *yp = (-9729*(*y) + 36972000)/100000;
+}
+
+void LCD_draw_button(char *m, unsigned short x, unsigned short y, unsigned short w, 
+        unsigned short h, unsigned short fc, unsigned short bkc)
+{
+    int i,j;
+    CS = 0; //BEGIN SPI
+    for(i = 0; i<w; i++) //start at x and go until x+w
+    {
+        for(j = 0; j < h; j++) //start at y and go until y+h
+        {
+                LCD_setAddr(x+i,y+j,1,1); //find pixel location
+                LCD_data16(bkc); //sets a color           
+        }
+    }
+    LCD_print(m, x+2, y+2, fc, bkc);
+    CS = 1; //end SPI
+    
+    
 }

@@ -335,6 +335,28 @@ void APP_Initialize(void) {
     IMU_Setup();
     SPI1_init();
     LCD_init();
+    
+    //initialize MAF buffer to -1g
+    int i;
+    for (i = 0; i<NUM_AVG; i++)
+    {
+        appData.maf[i] = -15555; //roughly 1g in the z direction
+        appData.fir[i] = -15555;
+    }
+    
+     appData.fir_wt[0] = 0.0338;
+     appData.fir_wt[1] = 0.2401;
+     appData.fir_wt[2] = 0.4521;
+     appData.fir_wt[3] = appData.fir_wt[1];
+     appData.fir_wt[4] = appData.fir_wt[0];
+     //weights from matlab fir1(4, 0.1): (5 samples, 0.1 nyquist = 0.5*100Hz = 5Hz)
+     //{0.0338, 0.2401, 0.4521, 0.2401, 0.0338};
+    
+    //initialize IIR to zero
+    appData.iir = -15555;
+    //weight the new data as 1/4 and old data as 3/4
+    appData.old_wt = 0.75;
+    appData.new_wt = 1-appData.old_wt;
 
     startTime = _CP0_GET_COUNT();
 }
@@ -420,7 +442,7 @@ void APP_Tasks(void) {
              * The isReadComplete flag gets updated in the CDC event handler. */
 
              /* WAIT FOR 100HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
-            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 100000)) {
+            if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 1000)) {
                 appData.state = APP_STATE_SCHEDULE_WRITE;
             }
 
@@ -460,6 +482,15 @@ void APP_Tasks(void) {
     
     unsigned short x, y;
     int z;
+    double mv_avg;
+    double fir_avg;
+    
+    //int num_avg = 5;
+    
+   //static short maf[NUM_AVG]; //NEED TO MOVE THIS OUT OF THE INFINITE LOOP OR ITLL KEEP BEING OVERWRITTEN
+    
+    
+     
     //5Hz reading
     //24000000 counts / sec
     //(24M * (1/5)counts) / (1/5 sec)
@@ -470,11 +501,11 @@ void APP_Tasks(void) {
            IMU_read_multiple(OUT_TEMP_L, dat, NUM_READS);
 
    //            temp =      (dat[1] << 8) | dat[0];
-           x_angle =   (dat[3] << 8) | dat[2];
-           y_angle =   (dat[5] << 8) | dat[4];
-           z_angle =   (dat[7] << 8) | dat[6];
-           x_accel =   (dat[9] << 8) | dat[8];
-           y_accel =   (dat[11] << 8) | dat[10];
+           //x_angle =   (dat[3] << 8) | dat[2];
+           //y_angle =   (dat[5] << 8) | dat[4];
+           //z_angle =   (dat[7] << 8) | dat[6];
+           //x_accel =   (dat[9] << 8) | dat[8];
+           //y_accel =   (dat[11] << 8) | dat[10];
            z_accel =   (dat[13] << 8) | dat[12];
            }
        else
@@ -487,7 +518,27 @@ void APP_Tasks(void) {
             
 //     if(_CP0_GET_COUNT() > (24000000/100))//every 100Hz
 //    {
-    len = sprintf(dataOut, "%d, %d %d %d %d %d %d \r\n", i, x_accel, y_accel, z_accel, x_angle, y_angle, z_angle);
+    
+        //update maf 
+    
+    appData.maf[i%NUM_AVG] = z_accel;
+    appData.fir[i%NUM_AVG] = z_accel * appData.fir_wt[i%NUM_AVG];
+    
+    //sum the numbers
+    for(z = 0; z<NUM_AVG; z++)
+    {
+        mv_avg += appData.maf[z];
+        fir_avg += appData.fir[z];        
+    }
+    mv_avg = mv_avg/NUM_AVG; //avg em
+    
+    
+    //update IIR
+    appData.iir = (appData.old_wt * appData.iir + appData.new_wt * (double) z_accel);
+//    
+    
+    
+        len = sprintf(dataOut, "%d, %d, %f, %f, %f \r\n", i, z_accel, mv_avg, appData.iir, fir_avg);
             //len = sprintf(dataOut, "%d %d %d %d %d %d %d \r\n", i, x_accel, y_accel, z_accel, x_angle, y_angle, z_angle);
             i++; // increment the index so we see a change in the text
             /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
