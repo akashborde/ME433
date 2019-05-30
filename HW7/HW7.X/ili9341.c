@@ -488,3 +488,39 @@ void LCD_draw_button(char *m, unsigned short x, unsigned short y, unsigned short
     
     
 }
+
+void LCD_plot_axis(unsigned short x, unsigned short y, unsigned short w,
+        unsigned short h, unsigned short fc)
+{
+    int i, j;
+    
+    CS = 0; //BEGIN SPI
+    for(i = 0; i<w; i++) //start at x and go until x+w
+    {
+       
+        LCD_setAddr(x,y-i,1,1); //find pixel location
+        LCD_data16(fc); //sets a color
+    }
+    for (j = 0; j<h; j++)
+    {
+        LCD_setAddr(x-j, y, 1, 1);
+        LCD_data16(fc);
+    }
+    CS = 1; //end SPI
+    
+}
+
+void LCD_plot_points(unsigned short x, unsigned short y, unsigned short fc, 
+        unsigned char*m, int length)
+{
+    CS = 0;
+    int i;
+    for (i = 0; i<length; i++)
+    {
+        LCD_setAddr(x-(m[i]>>3),y-i,1,1); //find pixel location
+        LCD_data16(fc); //sets a color
+    }
+    CS = 1;
+}
+
+

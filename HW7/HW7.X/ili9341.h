@@ -251,5 +251,11 @@ void LCD_posn_to_pixel(unsigned short *x, unsigned short *y, int *xp, int *yp);
 //draw buttons
 void LCD_draw_button(char*m,unsigned short x, unsigned short y, unsigned short w, 
         unsigned short h, unsigned short fc, unsigned short bkc);
+//draw static axes
+void LCD_plot_axis(unsigned short x, unsigned short y, unsigned short w,
+        unsigned short h, unsigned short fc);
+//draw individual pixels
+void LCD_plot_points(unsigned short x, unsigned short y, unsigned short fc, unsigned char*m, int length);
+
 
 #endif

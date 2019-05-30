@@ -14514,12 +14514,6 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <label x="-58.42" y="25.4" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$2" class="0">
-<segment>
-<pinref part="GREEN" gate="G$1" pin="A"/>
-<wire x1="127" y1="-5.08" x2="111.76" y2="-5.08" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$3" class="0">
 <segment>
 <pinref part="USER_PUSH" gate="G$1" pin="S"/>
@@ -14578,23 +14572,23 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <net name="USER_PUSH" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="33.B4"/>
-<wire x1="25.4" y1="2.54" x2="38.1" y2="2.54" width="0.1524" layer="91"/>
 <label x="38.1" y="2.54" size="1.778" layer="95"/>
 <label x="109.22" y="2.54" size="1.778" layer="95"/>
+<pinref part="USER_PUSH" gate="G$1" pin="P"/>
+<wire x1="124.46" y1="2.54" x2="111.76" y2="2.54" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="2.54" x2="109.22" y2="2.54" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="2.54" x2="109.22" y2="2.54" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="GREEN_LED" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="34.A4"/>
-<wire x1="25.4" y1="0" x2="38.1" y2="0" width="0.1524" layer="91"/>
 <label x="38.1" y="0" size="1.778" layer="95"/>
 <label x="111.76" y="-5.08" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="N$1" class="0">
-<segment>
-<pinref part="USER_PUSH" gate="G$1" pin="P"/>
-<wire x1="124.46" y1="2.54" x2="109.22" y2="2.54" width="0.1524" layer="91"/>
+<pinref part="GREEN" gate="G$1" pin="A"/>
+<wire x1="127" y1="-5.08" x2="111.76" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="0" x2="111.76" y2="0" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="0" x2="111.76" y2="-5.08" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+3V3" class="0">

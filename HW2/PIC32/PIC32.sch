@@ -11805,40 +11805,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </deviceset>
 </devicesets>
 </library>
-<library name="supply1" urn="urn:adsk.eagle:library:371">
-<description>&lt;b&gt;Supply Symbols&lt;/b&gt;&lt;p&gt;
- GND, VCC, 0V, +5V, -5V, etc.&lt;p&gt;
- Please keep in mind, that these devices are necessary for the
- automatic wiring of the supply signals.&lt;p&gt;
- The pin name defined in the symbol is identical to the net which is to be wired automatically.&lt;p&gt;
- In this library the device names are the same as the pin names of the symbols, therefore the correct signal names appear next to the supply symbols in the schematic.&lt;p&gt;
- &lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
-<packages>
-</packages>
-<symbols>
-<symbol name="+3V3" urn="urn:adsk.eagle:symbol:26950/1" library_version="1">
-<wire x1="1.27" y1="-1.905" x2="0" y2="0" width="0.254" layer="94"/>
-<wire x1="0" y1="0" x2="-1.27" y2="-1.905" width="0.254" layer="94"/>
-<text x="-2.54" y="-5.08" size="1.778" layer="96" rot="R90">&gt;VALUE</text>
-<pin name="+3V3" x="0" y="-2.54" visible="off" length="short" direction="sup" rot="R90"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="+3V3" urn="urn:adsk.eagle:component:26981/1" prefix="+3V3" library_version="1">
-<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
-<gates>
-<gate name="G$1" symbol="+3V3" x="0" y="0"/>
-</gates>
-<devices>
-<device name="">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="SparkFun-Connectors" urn="urn:adsk.eagle:library:513">
 <description>&lt;h3&gt;SparkFun Connectors&lt;/h3&gt;
 This library contains electrically-functional connectors. 
@@ -14259,13 +14225,13 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <part name="SUPPLY12" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="U$5" library="ME433" deviceset="SLIDE" device=""/>
 <part name="SUPPLY13" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
-<part name="+3V4" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
 <part name="SUPPLY14" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="3.3V" device=""/>
 <part name="C7" library="capacitor-wima" library_urn="urn:adsk.eagle:library:116" deviceset="C" device="2,5-3" package3d_urn="urn:adsk.eagle:package:5436/1" value="0.1u"/>
 <part name="SUPPLY15" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="SUPPLY16" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="3.3V" device=""/>
 <part name="SUPPLY17" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="3.3V" device=""/>
 <part name="SUPPLY18" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="3.3V" device=""/>
+<part name="SUPPLY19" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="3.3V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -14392,9 +14358,6 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <instance part="SUPPLY13" gate="GND" x="-68.58" y="10.16" smashed="yes" rot="R90">
 <attribute name="VALUE" x="-65.405" y="8.255" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="+3V4" gate="G$1" x="-71.12" y="2.54" smashed="yes">
-<attribute name="VALUE" x="-73.66" y="-2.54" size="1.778" layer="96" rot="R90"/>
-</instance>
 <instance part="SUPPLY14" gate="G$1" x="-50.8" y="5.08" smashed="yes">
 <attribute name="VALUE" x="-50.8" y="7.874" size="1.778" layer="96" align="bottom-center"/>
 </instance>
@@ -14413,6 +14376,9 @@ This footprint was designed to help hold the alignment of a through-hole compone
 </instance>
 <instance part="SUPPLY18" gate="G$1" x="-78.74" y="12.7" smashed="yes" rot="R270">
 <attribute name="VALUE" x="-75.946" y="12.7" size="1.778" layer="96" rot="R270" align="bottom-center"/>
+</instance>
+<instance part="SUPPLY19" gate="G$1" x="-71.12" y="0" smashed="yes">
+<attribute name="VALUE" x="-71.12" y="2.794" size="1.778" layer="96" align="bottom-center"/>
 </instance>
 </instances>
 <busses>
@@ -14595,6 +14561,11 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <pinref part="MPLAB_SNAP" gate="G$1" pin="4"/>
 <pinref part="SUPPLY18" gate="G$1" pin="3.3V"/>
 </segment>
+<segment>
+<pinref part="SUPPLY19" gate="G$1" pin="3.3V"/>
+<pinref part="R4" gate="G$1" pin="2"/>
+<wire x1="-71.12" y1="0" x2="-71.12" y2="-2.54" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="USER_PUSH" class="0">
 <segment>
@@ -14616,13 +14587,6 @@ This footprint was designed to help hold the alignment of a through-hole compone
 <wire x1="127" y1="-5.08" x2="111.76" y2="-5.08" width="0.1524" layer="91"/>
 <wire x1="25.4" y1="0" x2="111.76" y2="0" width="0.1524" layer="91"/>
 <wire x1="111.76" y1="0" x2="111.76" y2="-5.08" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="+3V3" class="0">
-<segment>
-<pinref part="+3V4" gate="G$1" pin="+3V3"/>
-<pinref part="R4" gate="G$1" pin="2"/>
-<wire x1="-71.12" y1="0" x2="-71.12" y2="-2.54" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="OSC1" class="0">

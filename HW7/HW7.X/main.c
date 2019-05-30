@@ -16,11 +16,46 @@
 #include "pragmas.h"
 #include "peripheral.h"
 #include "ili9341.h"
+#include <math.h>
 
 //#include "i2c_master_noint.h" //i2c initialization File
 
 //values for #pragma config settings are found in:
 // /opt/microchip/xc32/v2.15/docs/config_docs
+
+//volatile int counter = 0;
+
+void __ISR(_TIMER_3_VECTOR, IPL5SOFT) Timer3ISR(void) 
+{
+    LED_Invert_A4(); //Motor Direction LED
+    
+    static int counter = 0;
+    static int dir = 1;
+    
+    counter = counter + dir;
+    if (counter > 100)
+    {dir = -1;}
+    if (counter < 0)
+    {dir = 1;}    
+   
+    //PR2 = 2399, we want the duty cycle to be a percentage of this
+    OC4RS = (counter*2399)/100;
+    
+    IFS0bits.T3IF = 0; //clear interrupt flag
+   
+    // how many times has the interrupt occurred?
+    
+    
+        //declare a static integer int_num in main
+        //int_num++;
+        //if (int_num > threshold)
+        //int_num 
+        //OC1RS = int_num;
+    //LED_A4_INV
+    // set the duty cycle and direction pin
+    
+}
+
 
 
 int main() {
@@ -31,95 +66,94 @@ int main() {
     IMU_Setup(); // initialize the i2c
     SPI1_init();
     LCD_init();
-    _CP0_SET_COUNT(0); //begin timer
     
+     //Timer 2: 20kHz. PWM Guy.
+    T2CONbits.TCKPS = 0; // Timer2 prescaler N=1 (1:1)
+    // 48000000 = PBCLK, desired F = 20000
+    PR2 = 2399; // PR = PBCLK / N / desiredF - 1
+    TMR2 = 0; // initial TMR2 count is 0
+          
+    //set up output compare on OC4
+    //timer 2 is default for OC4
+    OC4CONbits.OCM = 0b110; // PWM mode without fault pin; other OC4CON bits are defaults
+    OC4RS = 600; // duty cycle, a percentage of PR2
+    OC4R = 0; // initialize before turning OC4 on; afterward it is read-only
+    //set OC4 to pin RPB13
+    RPB13Rbits.RPB13R = 0b0101;
+        
+    //set up timer 3 for interrupts
+    //100hz timer
+    T3CONbits.TCKPS = 0b100; //timer3 prescaler of 32
+    // 48000000 = PBCLK, desired F = 100
+    // PR = PBCLK / N / desiredF - 1
+    // 14999 = -1 + 48000000/32/(100) 
+    PR3 = 14999;
+    TMR3 = 0; //initialize to zero
+    IPC3bits.T3IP = 5; //priority 5
+    IPC3bits.T3IS = 0; //sub priority 0
+    IFS0bits.T3IF = 0; //clear interrupt flag
+    IEC0bits.T3IE = 1; //enable interrupt
+        
+    //turn on
+    T2CONbits.ON = 1; // turn on Timer2
+    T3CONbits.ON = 1; //turn on timer3
+    OC4CONbits.ON = 1; // turn on OC4
+    
+    
+    _CP0_SET_COUNT(0); //begin timer
+        
     __builtin_enable_interrupts();    
     LCD_clearScreen(ILI9341_PINK); 
     
-    //make sure the IMU is communicating
-    //char read = IMU_read();
+    unsigned char red[SCREEN_WIDTH];
+    unsigned char green[SCREEN_WIDTH];
+    unsigned char blue[SCREEN_WIDTH];
+    
+   
     
     //for printing to the screen later:
     char m[100];
     int b;   
-
-    int b1x, b1y, b1w, b1h, b2x, b2y, b2w, b2h;
     
-    int thresh = 1600;// button push threshhold
-    int score = 0;
-    
-    b1x = START_X;
-    b2x = START_X;
-    b1y = START_Y + 100;
-    b2y = START_Y + 150;
-    b1w = 100;
-    b2w = 100;
-    b1h = 30;
-    b2h = 30;
-    
-    unsigned short x, y;
-    int z, xp, yp;
-        
-    sprintf(m, "INCREMENT");
-    LCD_draw_button(m, b1x,b1y,b1w,b1h, ILI9341_BLUE, ILI9341_WHITE);
-
-    sprintf(m, "DECREMENT");
-    LCD_draw_button(m, b2x,b2y,b2w,b2h, ILI9341_RED, ILI9341_BLACK);
-            
-    
-    while(1) 
+    for (b = 0; b<SCREEN_WIDTH; b++)
     {
-       
-        //blink LED to verify the program hasn't crashed
-        if (_CP0_GET_COUNT() > 40000)
-        {
-            LED_Invert_A4(); //INVERT LED
-           _CP0_SET_COUNT(0);
-
-            //IMU_read_multiple(OUT_TEMP_L, dat, NUM_READS);
-            XPT2046_read(&x, &y, &z);
-
-            LCD_posn_to_pixel(&x,&y,&xp,&yp);
-
-            //score
-            sprintf(m, "SCORE = % +.2d", score);
-            LCD_print(m, ILI9341_TFTWIDTH/2 - 20, 26, ILI9341_BLUE, ILI9341_PINK); 
-            
-            //delete later
-            sprintf(m, "x_touch %d  ", x);
-            LCD_print(m, START_X, START_Y + 50, ILI9341_BLUE, ILI9341_PINK);
-
-            sprintf(m, "xp_touch %d  ", xp);
-            LCD_print(m, START_X + 100, START_Y + 50, ILI9341_BLUE, ILI9341_PINK);
-           
-            //delete later
-            sprintf(m, "y_touch %d  ", y);
-            LCD_print(m, START_X, START_Y + 60, ILI9341_BLUE, ILI9341_PINK);
-
-            sprintf(m, "yp_touch %d  ", yp);
-            LCD_print(m, START_X + 100, START_Y + 60, ILI9341_BLUE, ILI9341_PINK);
-
-            sprintf(m, "delta_z_touch %d  ", z);
-            LCD_print(m, START_X, START_Y + 70, ILI9341_BLUE, ILI9341_PINK);
-
-            if (z > thresh)
-            {
-                //increment
-                if((xp>b1x)&&(xp<(b1x+b1w))&&(yp>b1y)&&(yp<(b1h+b1y)))
-                {
-                    while (z>thresh)
-                    {XPT2046_read(&x, &y, &z);}
-                    score = score + 1;
-                }
-                if((xp>b2x)&&(xp<(b2w+b2x))&&(yp>b2y)&&(yp<(b2h+b2y)))
-                {
-                    while (z>thresh)
-                    {XPT2046_read(&x, &y, &z);}
-                    score = score - 1;
-                }                
-                //decrement
-            }
+        red[b] = b;
+        green[b] = 240-b;
+        blue[b] = 120;
+    }
+    b = 0;
+   
+    LCD_plot_axis(90, 280, 240, 32, ILI9341_BLACK);
+    sprintf(m, "RED");
+    LCD_print(m, 58, 285, ILI9341_RED, ILI9341_PINK);
+    LCD_plot_points(90,280,ILI9341_OLIVE,red,SCREEN_WIDTH);
+    sprintf(m, "GREEN");
+    LCD_print(m, 108, 285, ILI9341_GREEN, ILI9341_PINK);
+    LCD_plot_axis(140, 280, 240, 32, ILI9341_BLACK); 
+    LCD_plot_points(140,280,ILI9341_OLIVE,green,SCREEN_WIDTH);
+    sprintf(m, "BLUE");
+    LCD_print(m, 158, 285, ILI9341_BLUE, ILI9341_PINK);
+    LCD_plot_axis(190, 280, 240, 32, ILI9341_BLACK);
+    LCD_plot_points(190,280,ILI9341_OLIVE,blue,SCREEN_WIDTH);
         
-        }
+    //debugging
+       
+    while(1) 
+    {        
+//        //blink LED to verify the program hasn't crashed
+//        if (_CP0_GET_COUNT() > 24000000)
+//        {
+//            LED_Invert_A4(); //INVERT LED
+//           _CP0_SET_COUNT(0);        
+//        }
+        
+        
+        
+//        sprintf(m, "b = %3d, red[b] = %3d", b, (int) red[b]);
+//        LCD_print(m, 20, 20, ILI9341_BLUE, ILI9341_PINK);
+//        
+//        b++;
+//        if (b > SCREEN_WIDTH)
+//        {b=0;}
     }
 }

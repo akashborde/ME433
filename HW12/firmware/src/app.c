@@ -313,7 +313,8 @@ void APP_Tasks(void) {
             
             
             
-
+            sprintf(appData.m, "testmsg");
+            LCD_print(appData.m, 0, 0, ILI9341_BLUE, ILI9341_PINK);
             
             sprintf(appData.m, "x_accel = %d  ", appData.x_accel);
             LCD_print(appData.m, START_X, START_Y + 10, ILI9341_BLUE, ILI9341_PINK);

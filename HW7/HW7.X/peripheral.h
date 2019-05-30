@@ -14,6 +14,7 @@ extern "C" {
 
 #define TEN_HZ_PERIOD (4807692 / 2) //# of counts needed for core counts to overflow
     //at 0.1sec
+#define SCREEN_WIDTH 240
 
     
 void initializePIC32(void); // initializes pic
