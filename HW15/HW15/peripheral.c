@@ -28,12 +28,12 @@ void initializePIC32() // initializes pic
 void LED_Setup_A4()
 {
      // Green LED pin:  A4
-    TRISAbits.TRISA4 = 0; //set as output
-    LATAbits.LATA4 = 1;   //initialized as ON
+    TRISAbits.TRISA10 = 0; //set as output
+    LATAbits.LATA10 = 1;   //initialized as ON
 }
 
 void LED_Invert_A4()
 {
-     LATAINV = 0b10000; //INVERT THE LED
+     LATAINV = 0b10000000000; //INVERT THE LED
 }
 

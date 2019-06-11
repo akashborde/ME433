@@ -2,15 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/ili9341.h</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/peripheral.c</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/main.c</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/pragmas.h</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/peripheral.h</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/i2c_master_noint.h</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/i2c_master_noint.c</file>
-            <file>file:/home/akashborde/Projects/ME433/HW7/HW7.X/ili9341.c</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
