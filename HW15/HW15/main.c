@@ -154,19 +154,19 @@ void __ISR(_TIMER_3_VECTOR, IPL5SOFT) Timer3ISR(void)
 {
     LED_Invert_A4(); //Motor Direction LED
     
-//    static int counter = 0;
-//    static int dir = 1;
-//    
-//    counter = counter + dir;
-//    if (counter > 100)
-//    {dir = -1;}
-//    if (counter < 0)
-//    {dir = 1;}    
+    static int counter = 0;
+    static int dir = 1;
+    
+    counter = counter + dir;
+    if (counter > 100)
+    {dir = -1;}
+    if (counter < 0)
+    {dir = 1;}    
    
     int percentage = 50;
     //PR2 = 2399, we want the duty cycle to be a percentage of this
-    OC4RS = (percentage*2399)/100;
-    OC1RS = (percentage*2399)/100;
+    OC4RS = (counter*2399)/100;
+    OC1RS = (counter*2399)/100;
     
     IFS0bits.T3IF = 0; //clear interrupt flag
    
